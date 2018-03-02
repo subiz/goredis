@@ -33,7 +33,7 @@ func (c *Client) connectTo(prefix, password string, port, index int) error {
 
 func (c *Client) Connect(prefix, password string, port, shard int) error {
 	c.locks = cmap.New(shard * 2) // decrease collition rate of key
-
+	c.clients = cmap.New(shard * 2)
 	reschan := make(chan error, shard)
 	for i := 0; i < shard; i++ {
 		go func(i int) {
