@@ -68,3 +68,13 @@ func (c *Client) Set(shardkey, key string, value []byte, dur time.Duration) erro
 	client := clienti.(*redis.Client)
 	return client.Set(key, value, dur).Err()
 }
+
+func (c *Client) Expire(shardkey, key string, dur time.Duration) error {
+	clienti, ok := c.clients.Get(shardkey)
+	if !ok {
+		return errors.New("should not hapend, client is not init")
+	}
+	client := clienti.(*redis.Client)
+	_, err := client.Expire(key, dur).Result()
+	return err
+}
