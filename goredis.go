@@ -15,8 +15,7 @@ type Client struct {
 	clients cmap.Map
 }
 
-func (c *Client) connectTo(prefix, password string, port, index int) error {
-	redishost := fmt.Sprintf("%s%d:%d", prefix, index, port)
+func (c *Client) connectTo(redishost, password string) error {
 	client := redis.NewClient(&redis.Options{
 			Addr:     redishost,
 			Password: password,
@@ -31,17 +30,17 @@ func (c *Client) connectTo(prefix, password string, port, index int) error {
 	return nil
 }
 
-func (c *Client) Connect(prefix, password string, port, shard int) error {
-	c.locks = cmap.New(shard * 2) // decrease collition rate of key
-	c.clients = cmap.New(shard * 2)
-	reschan := make(chan error, shard)
-	for i := 0; i < shard; i++ {
-		go func(i int) {
-			reschan <- c.connectTo(prefix, password, port, i)
-		}(i)
+func (c *Client) Connect(hosts []string, password string) error {
+	c.locks = cmap.New(len(hosts) * 2) // decrease collition rate of key
+	c.clients = cmap.New(len(hosts) * 2)
+	reschan := make(chan error, len(hosts))
+	for _, host := range hosts {
+		go func(host string) {
+			reschan <- c.connectTo(host, password)
+		}(host)
 	}
 
-	for i := 0; i < shard; i++ {
+	for range hosts {
 		err := <- reschan
 		if err != nil {
 			return err
