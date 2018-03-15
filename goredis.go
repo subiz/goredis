@@ -2,6 +2,7 @@ package goredis
 
 import (
 	"bitbucket.org/subiz/map"
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"github.com/go-redis/redis"
@@ -73,8 +74,16 @@ func (c *Client) Get(shardkey, key string) ([]byte, error) {
 		return nil, errors.New("should not hapend, client is not init")
 	}
 	client := clienti.(*redis.Client)
-	str, err := client.Get(key).Result()
-	return []byte(str), err
+	str, err := client.Get(key).Bytes()
+	if err != nil {
+		return nil, err
+	}
+	dbuf := make([]byte, base64.StdEncoding.DecodedLen(len(str)))
+	n, err := base64.StdEncoding.Decode(dbuf, str)
+	if err != nil {
+		return nil, err
+	}
+	return dbuf[:n], nil
 }
 
 func (c *Client) Set(shardkey, key string, value []byte, dur time.Duration) error {
@@ -83,7 +92,10 @@ func (c *Client) Set(shardkey, key string, value []byte, dur time.Duration) erro
 		return errors.New("should not hapend, client is not init")
 	}
 	client := clienti.(*redis.Client)
-	return client.Set(key, value, dur).Err()
+
+	buf := make([]byte, base64.StdEncoding.EncodedLen(len(value)))
+	base64.StdEncoding.Encode(buf, value)
+	return client.Set(key, buf, dur).Err()
 }
 
 func (c *Client) Expire(shardkey, key string, dur time.Duration) error {
