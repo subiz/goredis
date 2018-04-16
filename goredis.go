@@ -1,12 +1,13 @@
 package goredis
 
 import (
-	"bitbucket.org/subiz/map"
 	"errors"
 	"fmt"
-	"github.com/go-redis/redis"
 	"strconv"
 	"time"
+
+	"bitbucket.org/subiz/map"
+	"github.com/go-redis/redis"
 )
 
 type ShardRedisClient Client
@@ -97,5 +98,15 @@ func (c *Client) Expire(shardkey, key string, dur time.Duration) error {
 	}
 	client := clienti.(*redis.Client)
 	_, err := client.Expire(key, dur).Result()
+	return err
+}
+
+func (c *Client) Del(shardkey, key string) error {
+	clienti, ok := c.clients.Get(c.GetKey(shardkey))
+	if !ok {
+		return errors.New("should not hapend, client is not init")
+	}
+	client := clienti.(*redis.Client)
+	_, err := client.Del(key).Result()
 	return err
 }
