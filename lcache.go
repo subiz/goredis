@@ -1,12 +1,11 @@
 package goredis
 
 import (
-	"sync"
-	"time"
-
-	common "bitbucket.org/subiz/gocommon"
+	"bitbucket.org/subiz/logan/log"
 	cmap "bitbucket.org/subiz/map"
 	"github.com/golang/protobuf/proto"
+	"sync"
+	"time"
 )
 
 // Lcache use lock key with concurrent map & store data cache into redis
@@ -27,7 +26,7 @@ func NewLcache(len int, redishosts []string, redispassword string) ILcache {
 	c.rclient = &Client{}
 	err := c.rclient.Connect(redishosts, redispassword)
 	if err != nil {
-		common.LogErr(err)
+		log.Error(err)
 	}
 	return c
 }
@@ -45,16 +44,19 @@ func (c *Lcache) Read(key string, data proto.Message) (proto.Message, *sync.Mute
 		if err := proto.Unmarshal(rdata, data); err != nil {
 			return data, locker, err
 		}
-		common.Log("cache hits", key)
+		log.Info("cache hits", key)
 		return data, locker, nil
 	}
 
-	common.Log("cache miss", key)
+	log.Info("cache miss", key)
 	return nil, locker, err
 }
 
 func (c *Lcache) Save(key string, data proto.Message, expire time.Duration) error {
-	byts := common.Protify(data)
+	byts, err := proto.Marshal(data)
+	if err != nil {
+		return err
+	}
 	return c.rclient.Set(key, key, byts, expire)
 }
 
