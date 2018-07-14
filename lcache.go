@@ -1,8 +1,7 @@
 package goredis
 
 import (
-	"bitbucket.org/subiz/logan/log"
-	cmap "bitbucket.org/subiz/map"
+	cmap "git.subiz.net/goutils/map"
 	"github.com/golang/protobuf/proto"
 	"sync"
 	"time"
@@ -26,7 +25,7 @@ func NewLcache(len int, redishosts []string, redispassword string) ILcache {
 	c.rclient = &Client{}
 	err := c.rclient.Connect(redishosts, redispassword)
 	if err != nil {
-		log.Error(err)
+		panic(err)
 	}
 	return c
 }
@@ -44,11 +43,9 @@ func (c *Lcache) Read(key string, data proto.Message) (proto.Message, *sync.Mute
 		if err := proto.Unmarshal(rdata, data); err != nil {
 			return data, locker, err
 		}
-		log.Info("cache hits", key)
 		return data, locker, nil
 	}
 
-	log.Info("cache miss", key)
 	return nil, locker, err
 }
 

@@ -3,9 +3,9 @@
 
 [[projects]]
   branch = "master"
-  name = "bitbucket.org/subiz/map"
-  packages = ["."]
-  revision = "90875618b8ac943fd3e5afcfdcb594422f17d907"
+  name = "git.subiz.net/goutils"
+  packages = ["map"]
+  revision = "9daac1c8c490781aa50db359dca8b510d0086689"
 
 [[projects]]
   name = "github.com/go-redis/redis"
@@ -19,12 +19,18 @@
     "internal/singleflight",
     "internal/util"
   ]
-  revision = "68362cfda1eeb3a69316e7bc00169a9a8de4823a"
-  version = "v6.9.2"
+  revision = "83fb42932f6145ce52df09860384a4653d2d332a"
+  version = "v6.12.0"
+
+[[projects]]
+  name = "github.com/golang/protobuf"
+  packages = ["proto"]
+  revision = "b4deda0973fb4c70b50d226b1af49f3da59f5265"
+  version = "v1.1.0"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "f66c5352b6ee76fc5e8588b91a2223313184eb93fc82e41882f291a8374a1a7f"
+  inputs-digest = "3d0574fa65c88d40f8cb6048b4a7a4545cf0d03627c4f2cf6024ab843d0306cb"
   solver-name = "gps-cdcl"
   solver-version = 1

@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"time"
 
-	"bitbucket.org/subiz/map"
+	"git.subiz.net/goutils/map"
 	"github.com/go-redis/redis"
 )
 
