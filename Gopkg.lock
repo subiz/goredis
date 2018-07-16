@@ -5,7 +5,7 @@
   branch = "master"
   name = "git.subiz.net/goutils"
   packages = ["map"]
-  revision = "9daac1c8c490781aa50db359dca8b510d0086689"
+  revision = "d4ee7c250ee0c607121e897e5f8de78098064726"
 
 [[projects]]
   name = "github.com/go-redis/redis"
@@ -23,14 +23,14 @@
   version = "v6.12.0"
 
 [[projects]]
+  branch = "master"
   name = "github.com/golang/protobuf"
   packages = ["proto"]
-  revision = "b4deda0973fb4c70b50d226b1af49f3da59f5265"
-  version = "v1.1.0"
+  revision = "14aad3d5ea4c323bcd7a2137e735da24a76e814c"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "3d0574fa65c88d40f8cb6048b4a7a4545cf0d03627c4f2cf6024ab843d0306cb"
+  inputs-digest = "5313d946446c7a4b4fd13c4c7b49d887f8f8b7b8f61a2dca40c32c59099c0bd8"
   solver-name = "gps-cdcl"
   solver-version = 1
