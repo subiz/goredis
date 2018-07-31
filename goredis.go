@@ -76,6 +76,9 @@ func (c *Client) Get(shardkey, key string) ([]byte, error) {
 	client := clienti.(*redis.Client)
 	str, err := client.Get(key).Bytes()
 	if err != nil {
+		if err.Error() == redis.Nil.Error() {
+			return nil, nil
+		}
 		return nil, err
 	}
 	return str, nil
