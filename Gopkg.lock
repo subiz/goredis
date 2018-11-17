@@ -3,11 +3,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:84acd2ff8dd442a44c8bdec3bb855e4e88476deb8b9a8d94cd551786df906831"
+  digest = "1:10668e8ec43e3cdcd8b2b99c519a44d2087b3a37d3b255102ff3dac5d3961a7f"
   name = "git.subiz.net/errors"
   packages = ["."]
   pruneopts = "UT"
-  revision = "4360317e8e599de8ff2724685f7075ed107a620a"
+  revision = "4b2229e3bba7ba637cb41cdccd9b40b979f935c4"
 
 [[projects]]
   branch = "master"
@@ -15,7 +15,7 @@
   name = "git.subiz.net/goutils"
   packages = ["map"]
   pruneopts = "UT"
-  revision = "b2395b27b74390a849e1b4ad6e16bdeb6d105fc2"
+  revision = "55cbdec4906a8b64d5e67ed8a96a3347d5a040f9"
 
 [[projects]]
   digest = "1:34a9a60fade37f8009ed4a19e02924198aba3eabfcc120ee5c6002b7de17212d"
