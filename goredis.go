@@ -22,7 +22,7 @@ type Client struct {
 func (c *Client) connectTo(i int, redishost, password string) error {
 	client := redis.NewClient(&redis.Options{Addr: redishost, Password: password})
 	if _, err := client.Ping().Result(); err != nil {
-		return errors.Wrap(err, 500, errors.E_cannot_connect_to_redis, redishost)
+		return errors.Errorf("cannot connect to redis", redishost)
 	}
 	// c.locks.Set(redishost, client)
 	c.clients.Set(strconv.Itoa(i), client)
@@ -74,7 +74,7 @@ func (c *Client) Load(key string, m proto.Message) error {
 	}
 
 	if err := proto.Unmarshal(b, m); err != nil {
-		return errors.Wrap(err, 500, errors.E_proto_marshal_error)
+		return errors.Errorf("goredis Load: proto marshal err: %v", err)
 	}
 	return nil
 }
@@ -82,7 +82,7 @@ func (c *Client) Load(key string, m proto.Message) error {
 // Store val to redis cache and local cache
 func (c *Client) Store(key string, val proto.Message) error {
 	if b, err := proto.Marshal(val); err != nil {
-		return errors.Wrap(err, 400, errors.E_proto_marshal_error)
+		return errors.Errorf("goredis Store: proto marshal err: %v", err)
 	} else {
 		return c.Set(key, key, b, c.ExpireDuration)
 	}
@@ -91,12 +91,12 @@ func (c *Client) Store(key string, val proto.Message) error {
 func (c *Client) Get(shardkey, key string) ([]byte, error) {
 	clienti, ok := c.clients.Get(c.GetKey(shardkey))
 	if !ok {
-		return nil, errors.New(500, errors.E_redis_client_is_uninitialized)
+		return nil, errors.Errorf("goredis Get: redis client is uninitialized")
 	}
 	client := clienti.(*redis.Client)
 	str, err := client.Get(key).Bytes()
 	if err != nil {
-		return nil, errors.Wrap(err, 500, errors.E_redis_error)
+		return nil, errors.Errorf("goredis Get: redis err %v", err)
 	}
 	return str, nil
 }
@@ -104,12 +104,12 @@ func (c *Client) Get(shardkey, key string) ([]byte, error) {
 func (c *Client) Set(shardkey, key string, value []byte, dur time.Duration) error {
 	clienti, ok := c.clients.Get(c.GetKey(shardkey))
 	if !ok {
-		return errors.New(500, errors.E_redis_client_is_uninitialized)
+		return errors.Errorf("goredis Set: redis client is uninitialized")
 	}
 	client := clienti.(*redis.Client)
 
 	if err := client.Set(key, value, dur).Err(); err != nil {
-		return errors.Wrap(err, 500, errors.E_redis_error)
+		return errors.Errorf("goredis Set (2): redis err %v", err)
 	}
 	return nil
 }
@@ -117,16 +117,16 @@ func (c *Client) Set(shardkey, key string, value []byte, dur time.Duration) erro
 func (c *Client) Expire(shardkey, key string, dur time.Duration) error {
 	clienti, ok := c.clients.Get(c.GetKey(shardkey))
 	if !ok {
-		return errors.New(500, errors.E_redis_client_is_uninitialized)
+		return errors.Errorf("goredis Expire: redis client is uninitialized")
 	}
 	client := clienti.(*redis.Client)
 	if dur <= 0 {
 		if _, err := client.Del(key).Result(); err != nil {
-			return errors.Wrap(err, 500, errors.E_redis_error)
+			return errors.Errorf("goredis Expire (1): redis err %v", err)
 		}
 	}
 	if _, err := client.Expire(key, dur).Result(); err != nil {
-		return errors.Wrap(err, 500, errors.E_redis_error)
+		return errors.Errorf("goredis Expire (2): redis err %v", err)
 	}
 	return nil
 }
