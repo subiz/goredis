@@ -130,3 +130,24 @@ func (c *Client) Expire(shardkey, key string, dur time.Duration) error {
 	}
 	return nil
 }
+
+func (c *Client) Incr(shardkey, key string, dur time.Duration) error {
+	clienti, ok := c.clients.Get(c.GetKey(shardkey))
+	if !ok {
+		return errors.Errorf("goredis Incr: redis client is uninitialized")
+	}
+	client := clienti.(*redis.Client)
+	if dur <= 0 {
+		if _, err := client.Incr(key).Result(); err != nil {
+			return errors.Errorf("goredis Incr (1): redis err %v", err)
+		}
+	}
+	pipe := client.TxPipeline()
+	incr := pipe.Incr(key)
+	pipe.Expire(key, dur)
+	if _, err := pipe.Exec(); err != nil {
+		return errors.Errorf("goredis Incr (2): redis err %v", err)
+	}
+	incr.Val()
+	return nil
+}
