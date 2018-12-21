@@ -2,22 +2,6 @@
 
 
 [[projects]]
-  branch = "master"
-  digest = "1:10668e8ec43e3cdcd8b2b99c519a44d2087b3a37d3b255102ff3dac5d3961a7f"
-  name = "git.subiz.net/errors"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "4b2229e3bba7ba637cb41cdccd9b40b979f935c4"
-
-[[projects]]
-  branch = "master"
-  digest = "1:ae458393f8b9ca35a1ac9de8e98fcaf535297b3382daac566c07b4afa3e45329"
-  name = "git.subiz.net/goutils"
-  packages = ["map"]
-  pruneopts = "UT"
-  revision = "55cbdec4906a8b64d5e67ed8a96a3347d5a040f9"
-
-[[projects]]
   digest = "1:34a9a60fade37f8009ed4a19e02924198aba3eabfcc120ee5c6002b7de17212d"
   name = "github.com/go-redis/redis"
   packages = [
@@ -42,14 +26,42 @@
   revision = "aa810b61a9c79d51363740d207bb46cf8e620ed5"
   version = "v1.2.0"
 
+[[projects]]
+  branch = "master"
+  digest = "1:84a5a2b67486d5d67060ac393aa255d05d24ed5ee41daecd5635ec22657b6492"
+  name = "github.com/mailru/easyjson"
+  packages = [
+    "buffer",
+    "jlexer",
+    "jwriter",
+  ]
+  pruneopts = "UT"
+  revision = "60711f1a8329503b04e1c88535f419d0bb440bff"
+
+[[projects]]
+  branch = "master"
+  digest = "1:12e04d91b6db9898c73ba79a8b224c8bb11c8c4146f4a1200fc11b50d51f8744"
+  name = "github.com/subiz/errors"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "408233fac4f61bb89d87fdd41ae480642c792e9c"
+
+[[projects]]
+  branch = "master"
+  digest = "1:ae458393f8b9ca35a1ac9de8e98fcaf535297b3382daac566c07b4afa3e45329"
+  name = "github.com/subiz/goutils"
+  packages = ["map"]
+  pruneopts = "UT"
+  revision = "7a6f083d4d3af6175c673d50e71adbdfb3858235"
+
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
-    "git.subiz.net/errors",
-    "git.subiz.net/goutils/map",
     "github.com/go-redis/redis",
     "github.com/golang/protobuf/proto",
+    "github.com/subiz/errors",
+    "github.com/subiz/goutils/map",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1

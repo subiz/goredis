@@ -4,10 +4,10 @@ import (
 	"strconv"
 	"time"
 
-	"git.subiz.net/errors"
-	"git.subiz.net/goutils/map"
 	"github.com/go-redis/redis"
 	"github.com/golang/protobuf/proto"
+	"github.com/subiz/errors"
+	"github.com/subiz/goutils/map"
 )
 
 type Client struct {
