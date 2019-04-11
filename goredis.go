@@ -11,7 +11,6 @@ import (
 )
 
 type Client struct {
-	// locks   cmap.Map
 	clients cmap.Map
 	shard   int
 
@@ -22,9 +21,9 @@ type Client struct {
 func (c *Client) connectTo(i int, redishost, password string) error {
 	client := redis.NewClient(&redis.Options{Addr: redishost, Password: password})
 	if _, err := client.Ping().Result(); err != nil {
-		return errors.Errorf("cannot connect to redis", redishost)
+		return errors.New(500, errors.E_cannot_connect_to_redis, redishost)
 	}
-	// c.locks.Set(redishost, client)
+
 	c.clients.Set(strconv.Itoa(i), client)
 	return nil
 }
@@ -47,7 +46,7 @@ func New(hosts []string, password string) (*Client, error) {
 	c := &Client{}
 	c.ExpireDuration = 24 * time.Hour
 	c.shard = len(hosts)
-	// c.locks = cmap.New(len(hosts) * 2)
+
 	c.clients = cmap.New(len(hosts) * 2)
 	reschan := make(chan error, len(hosts))
 	for i, host := range hosts {
@@ -67,16 +66,20 @@ func New(hosts []string, password string) (*Client, error) {
 
 // Load data from redis cache
 // return ErrNotFound if not found
-func (c *Client) Load(key string, m proto.Message) error {
-	b, err := c.Get(key, key)
+func (c *Client) Load(key string, m proto.Message) (bool, error) {
+	b, has, err := c.Get(key, key)
 	if err != nil {
-		return err
+		return false, err
+	}
+
+	if !has {
+		return false, err
 	}
 
 	if err := proto.Unmarshal(b, m); err != nil {
-		return errors.Errorf("goredis Load: proto marshal err: %v", err)
+		return false, errors.Errorf("goredis Load: proto marshal err: %v", err)
 	}
-	return nil
+	return true, nil
 }
 
 // Store val to redis cache and local cache
@@ -88,17 +91,20 @@ func (c *Client) Store(key string, val proto.Message) error {
 	}
 }
 
-func (c *Client) Get(shardkey, key string) ([]byte, error) {
+func (c *Client) Get(shardkey, key string) ([]byte, bool, error) {
 	clienti, ok := c.clients.Get(c.GetKey(shardkey))
 	if !ok {
-		return nil, errors.Errorf("goredis Get: redis client is uninitialized")
+		return nil, false, errors.Errorf("goredis Get: redis client is uninitialized")
 	}
 	client := clienti.(*redis.Client)
-	str, err := client.Get(key).Bytes()
-	if err != nil {
-		return nil, errors.Errorf("goredis Get: redis err %v", err)
+	b, err := client.Get(key).Bytes()
+	if err == redis.Nil {
+		return nil, false, nil
 	}
-	return str, nil
+	if err != nil {
+		return nil, false, errors.Errorf("goredis Get: redis err %v", err)
+	}
+	return b, false, nil
 }
 
 func (c *Client) Set(shardkey, key string, value []byte, dur time.Duration) error {
