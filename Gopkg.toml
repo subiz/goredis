@@ -27,19 +27,11 @@
 
 [[constraint]]
   name = "github.com/go-redis/redis"
-  version = "6.14.2"
+  version = "6.15.2"
 
 [[constraint]]
   name = "github.com/golang/protobuf"
-  version = "1.2.0"
-
-[[constraint]]
-  branch = "master"
-  name = "github.com/subiz/errors"
-
-[[constraint]]
-  branch = "master"
-  name = "github.com/subiz/goutils"
+  version = "1.3.1"
 
 [prune]
   go-tests = true
